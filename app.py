@@ -58,7 +58,15 @@ if st.button("Book valgte datoer"):
 # 📅 Vis kalender etter bookingseksjon
 st.subheader("📅 Kalenderoversikt")
 
-hendelser = df.to_dict("records")
+hendelser = [
+    {
+        "title": row["title"],
+        "start": pd.to_datetime(row["start"]).isoformat(),
+        "end": pd.to_datetime(row["end"]).isoformat()
+    }
+    for _, row in df.iterrows()
+]
+
 
 kalender_valg = {
     "initialView": "dayGridMonth",
