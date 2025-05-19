@@ -1,44 +1,71 @@
 import streamlit as st
 import pandas as pd
-import datetime
 import os
+import datetime
+from streamlit_calendar import calendar
 
-st.set_page_config(page_title="Summer House Booking", layout="centered")
+st.set_page_config(page_title="Familiebooking – Spaniahytta", layout="wide")
 
-st.title("🏡 Summer House Booking Calendar")
-st.markdown("Use this app to book days at the family summer house in Spain 🇪🇸")
+st.title("🏡 Familiebooking – Sommerhuset i Spania 🇪🇸")
 
-# Load or create bookings
-DATA_FILE = "bookings.csv"
+DATAFIL = "bookinger.csv"
 
-if os.path.exists(DATA_FILE):
-    bookings = pd.read_csv(DATA_FILE)
+# Last inn eller lag ny CSV
+if os.path.exists(DATAFIL):
+    df = pd.read_csv(DATAFIL, parse_dates=["start", "end"])
 else:
-    bookings = pd.DataFrame(columns=["Date", "Name"])
+    df = pd.DataFrame(columns=["title", "start", "end"])
 
-# Convert date column to datetime
-if not bookings.empty:
-    bookings["Date"] = pd.to_datetime(bookings["Date"]).dt.date
+# Vis eksisterende bookinger i kalender
+st.subheader("📅 Kalenderoversikt (lesevisning)")
+hendelser = df.to_dict("records")
 
-# Booking form
-st.subheader("Make a Booking")
-name = st.text_input("👤 Your name")
-date = st.date_input("📅 Select a date", min_value=datetime.date.today())
+kalender_valg = {
+    "initialView": "dayGridMonth",
+    "locale": "nb",
+    "headerToolbar": {
+        "left": "prev,next today",
+        "center": "title",
+        "right": "dayGridMonth,timeGridWeek"
+    },
+    "editable": False,
+    "selectable": False,
+    "dayMaxEvents": True,
+}
 
-if st.button("Book Date"):
-    if not name:
-        st.warning("Please enter your name.")
-    elif date in bookings["Date"].values:
-        st.error(f"That date ({date}) is already booked!")
+calendar(events=hendelser, options=kalender_valg, key="kalender")
+
+# Brukerbooking med dato-velger
+st.subheader("📆 Book opphold")
+navn = st.text_input("👤 Navn")
+datointervall = st.date_input(
+    "Velg ankomst- og avreisedato",
+    value=(datetime.date.today(), datetime.date.today() + datetime.timedelta(days=2))
+)
+
+if st.button("Book valgte datoer"):
+    if not navn:
+        st.warning("⚠️ Skriv inn navnet ditt.")
+    elif len(datointervall) != 2:
+        st.warning("⚠️ Velg både ankomst og avreisedato.")
     else:
-        new_booking = pd.DataFrame({"Date": [date], "Name": [name]})
-        bookings = pd.concat([bookings, new_booking], ignore_index=True)
-        bookings.to_csv(DATA_FILE, index=False)
-        st.success(f"🎉 {name}, you have booked {date}!")
-
-# Show existing bookings
-st.subheader("📖 Current Bookings")
-if bookings.empty:
-    st.info("No bookings yet.")
-else:
-    st.dataframe(bookings.sort_values("Date").reset_index(drop=True))
+        start, end = datointervall
+        if start > end:
+            st.error("🚫 Ankomstdato kan ikke være etter avreisedato.")
+        else:
+            # Sjekk overlapp
+            overlap = df[
+                (df["start"].dt.date <= end) & (df["end"].dt.date >= start)
+            ]
+            if not overlap.empty:
+                st.error("🚫 Datoene overlapper med eksisterende booking.")
+            else:
+                ny_booking = pd.DataFrame([{
+                    "title": navn,
+                    "start": start,
+                    "end": end
+                }])
+                df = pd.concat([df, ny_booking], ignore_index=True)
+                df.to_csv(DATAFIL, index=False)
+                st.success(f"✅ Booking registrert for {navn}: {start} til {end}")
+                st.rerun()
