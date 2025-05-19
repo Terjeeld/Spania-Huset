@@ -17,8 +17,8 @@ else:
     df = pd.DataFrame(columns=["title", "start", "end"])
 
 # Konverter dato-kolonner til datetime
-df["start"] = pd.to_datetime(df["start"])
-df["end"] = pd.to_datetime(df["end"])
+df["start"] = pd.to_datetime(df["start"], errors='coerce')
+df["end"] = pd.to_datetime(df["end"], errors='coerce')
 
 # 📆 Bookingseksjon
 st.subheader("📆 Book opphold")
