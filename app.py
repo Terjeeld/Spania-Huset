@@ -9,7 +9,7 @@ st.set_page_config(page_title="Familiebooking – Spaniahytta", layout="wide")
 
 st.title("🏡 Familiebooking – Sommerhuset i Spania 🇪🇸")
 
-DATAFIL = "bookings.csv"
+DATAFIL = os.path.join(os.path.dirname(__file__), "bookings.csv")
 
 # Last inn eller lag ny fil
 if os.path.exists(DATAFIL):
