@@ -60,16 +60,20 @@ if st.button("Book valgte datoer"):
                 }])
                 df = pd.concat([df, ny_booking], ignore_index=True)
                 df.to_csv(DATAFIL, index=False)
+                
+                # Store a success flag in session state
+                st.session_state.booking_ok = True
+                
+                # Debug info BEFORE rerun
                 st.write("📄 FORSØKTE Å LAGRE TIL:", os.path.abspath(DATAFIL))
-
-                # Try reading file immediately back
+                
                 try:
                     test_df = pd.read_csv(DATAFIL)
                     st.write("📄 Innhold etter skriving:", test_df)
                 except Exception as e:
                     st.error(f"❌ Klarte ikke lese tilbake filen: {e}")
-
-                st.session_state.booking_ok = True
+                
+                # 🔄 Then force app reload
                 st.rerun()
 
 # ✅ Show success message after rerun
