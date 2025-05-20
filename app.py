@@ -24,6 +24,13 @@ df = df.dropna(subset=["start", "end"])
 
 # 📆 Bookingseksjon
 st.subheader("📆 Book opphold")
+# 🧪 Debug: log all inputs before button
+st.write("📌 Navn:", navn)
+st.write("📌 Datointervall:", datointervall)
+st.write("📌 Type:", type(datointervall))
+if isinstance(datointervall, tuple):
+    st.write("📌 Startdato:", datointervall[0])
+    st.write("📌 Sluttdato:", datointervall[1])
 
 navn = st.text_input("👤 Ditt navn")
 datointervall = st.date_input(
