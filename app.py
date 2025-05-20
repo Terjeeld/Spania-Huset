@@ -24,19 +24,21 @@ df = df.dropna(subset=["start", "end"])
 
 # 📆 Bookingseksjon
 st.subheader("📆 Book opphold")
-# 🧪 Debug: log all inputs before button
+
+# 👤 Brukerinndata
+navn = st.text_input("👤 Ditt navn")
+datointervall = st.date_input(
+    "Velg ankomst- og avreisedato",
+    value=(datetime.date.today(), datetime.date.today() + datetime.timedelta(days=2))
+)
+
+# 🧪 Debug etter at input er definert
 st.write("📌 Navn:", navn)
 st.write("📌 Datointervall:", datointervall)
 st.write("📌 Type:", type(datointervall))
 if isinstance(datointervall, tuple):
     st.write("📌 Startdato:", datointervall[0])
     st.write("📌 Sluttdato:", datointervall[1])
-
-navn = st.text_input("👤 Ditt navn")
-datointervall = st.date_input(
-    "Velg ankomst- og avreisedato",
-    value=(datetime.date.today(), datetime.date.today() + datetime.timedelta(days=2))
-)
 
 if st.button("Book valgte datoer"):
     if not navn:
