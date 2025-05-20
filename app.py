@@ -54,6 +54,7 @@ if st.button("Book valgte datoer"):
                 }])
                 df = pd.concat([df, ny_booking], ignore_index=True)
                 df.to_csv(DATAFIL, index=False)
+                st.write("📄 Filen lagres her:", os.path.abspath(DATAFIL))
                 st.success(f"✅ Booking registrert for {navn}: {start} til {end}")
                 st.rerun()
 
