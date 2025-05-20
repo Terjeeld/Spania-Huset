@@ -59,7 +59,11 @@ if st.button("Book valgte datoer"):
                     "end": end
                 }])
                 df = pd.concat([df, ny_booking], ignore_index=True)
-                df.to_csv(DATAFIL, index=False)
+                
+                with open(DATAFIL, "w", encoding="utf-8") as f:
+                df.to_csv(f, index=False)
+                f.flush()
+                os.fsync(f.fileno())  # 🔒 ensures flush to disk
                 
                 # Store a success flag in session state
                 st.session_state.booking_ok = True
