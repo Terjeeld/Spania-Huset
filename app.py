@@ -22,6 +22,10 @@ df["start"] = pd.to_datetime(df["start"], errors="coerce")
 df["end"] = pd.to_datetime(df["end"], errors="coerce")
 df = df.dropna(subset=["start", "end"])
 
+if "booking_ok" not in st.session_state:
+    st.session_state.booking_ok = False
+
+
 # 📆 Bookingseksjon
 st.subheader("📆 Book opphold")
 
@@ -32,18 +36,11 @@ datointervall = st.date_input(
     value=(datetime.date.today(), datetime.date.today() + datetime.timedelta(days=2))
 )
 
-# 🧪 Debug etter at input er definert
-st.write("📌 Navn:", navn)
-st.write("📌 Datointervall:", datointervall)
-st.write("📌 Type:", type(datointervall))
-if isinstance(datointervall, tuple):
-    st.write("📌 Startdato:", datointervall[0])
-    st.write("📌 Sluttdato:", datointervall[1])
 
 if st.button("Book valgte datoer"):
     if not navn:
         st.warning("⚠️ Skriv inn navnet ditt.")
-    elif len(datointervall) != 2:
+    elif not isinstance(datointervall, tuple) or len(datointervall) != 2:
         st.warning("⚠️ Velg både ankomst og avreisedato.")
     else:
         start, end = datointervall
@@ -63,9 +60,13 @@ if st.button("Book valgte datoer"):
                 }])
                 df = pd.concat([df, ny_booking], ignore_index=True)
                 df.to_csv(DATAFIL, index=False)
-                st.write("📄 Filen lagres her:", os.path.abspath(DATAFIL))
-                st.success(f"✅ Booking registrert for {navn}: {start} til {end}")
+                st.session_state.booking_ok = True
                 st.rerun()
+
+# ✅ Show success message after rerun
+if st.session_state.booking_ok:
+    st.success("✅ Booking registrert!")
+    st.session_state.booking_ok = False
 
 # 📅 Vis kalender etter bookingseksjon
 st.subheader("📅 Kalenderoversikt")
