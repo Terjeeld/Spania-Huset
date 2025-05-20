@@ -7,7 +7,7 @@ from streamlit_calendar import calendar
 
 st.set_page_config(page_title="Familiebooking – Spaniahytta", layout="wide")
 
-st.title("🏡 Familiebooking – Sommerhuset i Spania 🇪🇸")
+st.title("🏡 Familiebooking – Hytta i Spania 🇪🇸")
 
 DATAFIL = os.path.join(os.path.dirname(__file__), "bookings.csv")
 
