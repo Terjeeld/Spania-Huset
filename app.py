@@ -15,7 +15,14 @@ DATAFIL = os.path.join(os.path.dirname(__file__), "bookings.csv")
 if os.path.exists(DATAFIL):
     df = pd.read_csv(DATAFIL)
 else:
-    df = pd.DataFrame(columns=["title", "start", "end"])
+    st.warning("📄 bookings.csv ikke funnet – prøver å opprette ny...")
+    try:
+        df = pd.DataFrame(columns=["title", "start", "end"])
+        df.to_csv(DATAFIL, index=False, encoding="utf-8")
+        st.success(f"✅ Opprettet ny fil: {DATAFIL}")
+    except Exception as e:
+        st.error(f"❌ Kunne ikke opprette bookings.csv: {e}")
+        st.stop()
 
 # Konverter dato-kolonner til datetime
 df["start"] = pd.to_datetime(df["start"], errors="coerce")
