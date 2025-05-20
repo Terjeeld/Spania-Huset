@@ -75,7 +75,7 @@ hendelser = [
     {
         "title": row["title"],
         "start": pd.to_datetime(row["start"]).isoformat(),
-        "end": pd.to_datetime(row["end"]).isoformat()
+        "end": (pd.to_datetime(row["end"]) + pd.Timedelta(days=1)).isoformat()  # +1 dag for å inkludere sluttdagen
     }
     for _, row in df.iterrows()
 ]
